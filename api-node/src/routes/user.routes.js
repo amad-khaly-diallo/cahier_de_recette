@@ -2,8 +2,8 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user.controller");
-const protect = require('../middleware/authMiddleware');
-const admin = require('../middleware/adminMiddleware');
+const {protect} = require('../middlewares/authMiddleware');
+const admin = require('../middlewares/adminMiddleware');
 
 /**
  * @swagger

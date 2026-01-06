@@ -127,8 +127,8 @@
 
 const express = require("express");
 const router = express.Router();
-const protect = require("../middleware/authMiddleware");
-const checkOwner = require("../middleware/checkOwner");
+const {protect} = require("../middlewares/authMiddleware");
+const checkOwner = require("../middlewares/checkOwner");
 const Recipe = require("../models/Recipe");
 const recipeController = require("../controllers/recipe.controller");
 

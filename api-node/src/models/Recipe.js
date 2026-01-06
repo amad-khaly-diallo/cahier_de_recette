@@ -10,7 +10,15 @@ const recetteSchema = new mongoose.Schema(
     servings: { type: Number },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
   },
-  { timestamps: true }
+  { timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true } 
+  }
 );
-
+// Populate comments when fetching a recipe
+recetteSchema.virtual("comments", {
+  ref: "Comment",
+  localField: "_id",
+  foreignField: "recipeId"
+});
 module.exports = mongoose.model('Recipe', recetteSchema);

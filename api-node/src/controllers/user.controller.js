@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const generateToken = require("../utils/generateTokens");
+const { generateToken } = require("../utils/generateTokens");
 
 // GET /api/users
 const getAllUsers = async (req, res) => {

@@ -23,7 +23,17 @@ const createRecipe = async (req, res) => {
 // GET /api/recipes/:id
 const getRecipeById = async (req, res) => {
   try {
-    const recipe = await Recipe.findById(req.params.id);
+    const recipe = await Recipe.findById(req.params.id).populate({
+      path: "comments",
+      options: {
+        sort: { createdAt: -1 },
+        limit: 10
+      },
+      populate: {
+        path: "userId",
+        select: "username avatar"
+      }
+    });
     if (!recipe) return res.status(404).json({ message: "Recipe not found" });
     res.json(recipe);
   } catch (err) {
