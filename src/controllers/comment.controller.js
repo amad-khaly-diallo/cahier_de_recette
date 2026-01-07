@@ -3,15 +3,14 @@ const Comment = require('../models/Comment');
 // POST /api/comments
 const createComment = async (req, res) => {
   try {
-    const { content, recipeId } = req.body;
+    const { content, recipeId, userId } = req.body;
 
-    if (!content || !recipeId) {
-      return res.status(400).json({ message: "Données manquantes" });
-    }
+    if (!content || !recipeId) return res.status(400).json({ message: "Données manquantes" });
+
     const comment = await Comment.create({
       content,
       recipeId,
-      userId: req.user.id
+      userId: userId
     });
 
     res.status(201).json(comment);

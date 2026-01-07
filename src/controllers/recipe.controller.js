@@ -1,14 +1,46 @@
 const Recipe = require('../models/Recipe');
 
-// GET /api/recipes
 const getAllRecipes = async (req, res) => {
   try {
-    const recipes = await Recipe.find().populate('userId', 'name email');
-    res.json(recipes);
+    const { ingredient, author, sortBy, sortOrder, page, limit } = req.query;
+
+    // Construire le filtre
+    const filter = {};
+    if (ingredient) filter.ingredients = { $in: [ingredient] }; // recettes qui contiennent l’ingrédient
+    if (author) filter.userId = author;
+
+    // Construire le tri
+    let sort = {};
+    if (sortBy === 'popularity') {
+      sort = { likes: sortOrder === 'asc' ? 1 : -1 };
+    } else {
+      sort = { createdAt: sortOrder === 'asc' ? 1 : -1 };
+    }
+
+    // Pagination
+    const pageNumber = parseInt(page) || 1;
+    const pageSize = parseInt(limit) || 10;
+    const skip = (pageNumber - 1) * pageSize;
+
+    const recipes = await Recipe.find(filter)
+      .sort(sort)
+      .skip(skip)
+      .limit(pageSize)
+      .populate('userId', 'name email');
+
+    const total = await Recipe.countDocuments(filter);
+
+    res.json({
+      page: pageNumber,
+      limit: pageSize,
+      total,
+      recipes
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 // POST /api/recipes
 const createRecipe = async (req, res) => {
@@ -31,7 +63,7 @@ const getRecipeById = async (req, res) => {
       },
       populate: {
         path: "userId",
-        select: "username avatar"
+        select: "name email"
       }
     });
     if (!recipe) return res.status(404).json({ message: "Recipe not found" });

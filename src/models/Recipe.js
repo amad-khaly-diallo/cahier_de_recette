@@ -8,7 +8,8 @@ const recetteSchema = new mongoose.Schema(
     preparationTime: { type: Number },
     cookingTime: { type: Number },
     servings: { type: Number },
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    likes: { type: Number, default: 0 }
   },
   { timestamps: true,
     toJSON: { virtuals: true },
