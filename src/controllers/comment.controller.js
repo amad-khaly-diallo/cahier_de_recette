@@ -3,8 +3,10 @@ const Comment = require('../models/Comment');
 // POST /api/comments
 const createComment = async (req, res) => {
   try {
-    const { content, recipeId, userId } = req.body;
-
+    const { content } = req.body;
+    const { recipeId } = req.params;
+    const userId = req.user.id;
+    
     if (!content || !recipeId) return res.status(400).json({ message: "Données manquantes" });
 
     const comment = await Comment.create({
@@ -27,7 +29,7 @@ const getComments = async (req, res) => {
     const comments = await Comment
       .find({ recipeId })
       .sort({ createdAt: -1 })
-      .populate('userId', 'username avatar');
+      .populate('userId', 'name');
 
     res.status(200).json(comments);
   } catch (error) {

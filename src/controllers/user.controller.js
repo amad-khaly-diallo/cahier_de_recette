@@ -30,8 +30,6 @@ const createUser = async (req, res) => {
       name: user.name,
       email: user.email
     });
-
-    res.status(201).json(user);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

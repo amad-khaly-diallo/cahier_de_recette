@@ -1,3 +1,10 @@
+const express = require("express");
+const router = express.Router();
+const protect = require("../middlewares/authMiddleware");
+const checkOwner = require("../middlewares/checkOwner");
+const Recipe = require("../models/Recipe");
+const recipeController = require("../controllers/recipe.controller");
+
 /**
  * @swagger
  * tags:
@@ -9,14 +16,24 @@
  * @swagger
  * /api/recipes:
  *   get:
- *     summary: Récupérer toutes les recettes
+ *     summary: Lister toutes les recettes
  *     tags: [Recipes]
- *     security:
- *       - cookieAuth: []
  *     responses:
  *       200:
- *         description: Liste des recettes avec info utilisateur
- *
+ *         description: Liste des recettes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Recipe'
+ */
+// GET toutes les recettes (user connecté)
+router.get("/", recipeController.getAllRecipes);
+
+/**
+ * @swagger
+ * /api/recipes:
  *   post:
  *     summary: Créer une recette
  *     tags: [Recipes]
@@ -27,50 +44,41 @@
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - title
- *               - ingredients
- *               - instructions
- *             properties:
- *               title:
- *                 type: string
- *               ingredients:
- *                 type: array
- *                 items:
- *                   type: string
- *               instructions:
- *                 type: string
- *               preparationTime:
- *                 type: number
- *               cookingTime:
- *                 type: number
- *               servings:
- *                 type: number
+ *             $ref: '#/components/schemas/Recipe'
  *     responses:
  *       201:
  *         description: Recette créée
  */
+// POST → créer recette
+router.post("/", protect, recipeController.createRecipe);
+
 
 /**
  * @swagger
  * /api/recipes/{id}:
  *   get:
- *     summary: Récupérer une recette par ID
+ *     summary: Obtenir une recette par ID
  *     tags: [Recipes]
- *     security:
- *       - cookieAuth: []
  *     parameters:
  *       - in: path
  *         name: id
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: ID de la recette
  *     responses:
  *       200:
  *         description: Recette trouvée
- *
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Recipe'
+ */
+// GET une recette par ID
+router.get("/:id", recipeController.getRecipeById);
+
+/**
+ * @swagger
+ * /api/recipes/{id}:
  *   put:
  *     summary: Mettre à jour une recette
  *     tags: [Recipes]
@@ -82,32 +90,23 @@
  *         required: true
  *         schema:
  *           type: string
- *         description: ID de la recette
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *               ingredients:
- *                 type: array
- *                 items:
- *                   type: string
- *               instructions:
- *                 type: string
- *               preparationTime:
- *                 type: number
- *               cookingTime:
- *                 type: number
- *               servings:
- *                 type: number
+ *             $ref: '#/components/schemas/Recipe'
  *     responses:
  *       200:
  *         description: Recette mise à jour
  *
+ */
+// PUT → update recette (propriétaire ou admin dans le controller)
+router.put("/:id", protect, checkOwner(Recipe, "id"), recipeController.updateRecipe);
+
+/**
+ * @swagger
+ * /api/recipes/{id}:
  *   delete:
  *     summary: Supprimer une recette
  *     tags: [Recipes]
@@ -119,31 +118,11 @@
  *         required: true
  *         schema:
  *           type: string
- *         description: ID de la recette
  *     responses:
  *       200:
  *         description: Recette supprimée
+ *
  */
-
-const express = require("express");
-const router = express.Router();
-const {protect} = require("../middlewares/authMiddleware");
-const checkOwner = require("../middlewares/checkOwner");
-const Recipe = require("../models/Recipe");
-const recipeController = require("../controllers/recipe.controller");
-
-// GET toutes les recettes → user connecté
-router.get("/", protect, recipeController.getAllRecipes);
-
-// POST → créer recette
-router.post("/", protect, recipeController.createRecipe);
-
-// GET une recette par ID
-router.get("/:id", protect, recipeController.getRecipeById);
-
-// PUT → update recette (propriétaire ou admin dans le controller)
-router.put("/:id", protect, checkOwner(Recipe, "id"), recipeController.updateRecipe);
-
 // DELETE → delete recette (propriétaire ou admin dans le controller)
 router.delete("/:id", protect, checkOwner(Recipe, "id"), recipeController.deleteRecipe);
 

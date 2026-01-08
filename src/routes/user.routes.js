@@ -1,9 +1,8 @@
-
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user.controller");
-const {protect} = require('../middlewares/authMiddleware');
-const admin = require('../middlewares/adminMiddleware');
+const  protect  = require("../middlewares/authMiddleware");
+const admin = require("../middlewares/adminMiddleware");
 
 /**
  * @swagger
@@ -14,52 +13,94 @@ const admin = require('../middlewares/adminMiddleware');
 
 /**
  * @swagger
- * /api/users/auth/register:
- *   post:
- *     summary: Créer un utilisateur
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *               - email
- *               - password
- *             properties:
- *               name:
- *                 type: string
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       201:
- *         description: Utilisateur créé
- */
-
-/**
- * @swagger
  * /api/users:
  *   get:
- *     summary: Récupérer tous les utilisateurs
+ *     summary: Lister tous les utilisateurs (admin)
  *     tags: [Users]
+ *     security:
+ *       - cookieAuth: []
  *     responses:
  *       200:
  *         description: Liste des utilisateurs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  */
+// Lister tous les users (admin only)
+router.get("/", protect, admin, userController.getAllUsers);
 
-// Auth
-router.post("/auth/register", userController.createUser);
-router.post("/auth/login", userController.loginUser);
-router.post("/auth/logout", protect, userController.logoutUser);
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     summary: Supprimer un utilisateur par ID (admin)
+ *     tags: [Users]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Utilisateur supprimé
+ */
+// Supprimer un user (admin only) 
+router.delete("/:id", protect, admin, userController.deleteUser);
 
-// CRUD Users
-router.get("/", protect, admin, userController.getAllUsers); // seulement admin
-router.get("/:id", protect, userController.getUserById); // user ou admin
-router.put("/:id", protect, userController.updateUser); // user ou admin
-router.delete("/:id", protect, admin, userController.deleteUser); // seulement admin
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Obtenir un utilisateur par ID
+ *     tags: [Users]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Détails de l'utilisateur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ **/
+// Obtenir un user par ID (auth requis)
+router.get("/:id", protect, userController.getUserById);
+
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   put:
+ *     summary: Mettre à jour un utilisateur par ID
+ *     tags: [Users]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Utilisateur mis à jour
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ */
+// User or admin can update his info
+router.put("/:id", protect, userController.updateUser);
 
 module.exports = router;
