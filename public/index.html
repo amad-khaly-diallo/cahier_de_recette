@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Recipe API - Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <div>
+          <h1>Recipe API</h1>
+          <p class="subtitle">Documentation d'accueil de votre API Node.js / Express</p>
+        </div>
+        <a href="/api-docs" class="btn primary" target="_blank">Ouvrir Swagger UI</a>
+      </header>
+
+      <main class="layout">
+        <section class="card main-card">
+          <h2>Comment démarrer</h2>
+          <p>
+            Votre API tourne actuellement sur
+            <code>http://localhost:3000</code>.
+          </p>
+          <p>
+            Utilisez cette page comme point d'entrée pour explorer les
+            principaux endpoints et fonctionnalités.
+          </p>
+
+          <div class="grid">
+            <div class="pill">
+              <span class="pill-label">Health Check</span>
+              <code>GET /health</code>
+            </div>
+            <div class="pill">
+              <span class="pill-label">Swagger UI</span>
+              <code>GET /api-docs</code>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Authentification</h2>
+          <p>Endpoints liés à l'inscription, connexion et déconnexion.</p>
+          <ul class="endpoint-list">
+            <li>
+              <span class="method post">POST</span>
+              <code>/api/auth/register</code>
+              <span class="badge">Créer un utilisateur</span>
+            </li>
+            <li>
+              <span class="method post">POST</span>
+              <code>/api/auth/login</code>
+              <span class="badge">Connexion (cookie JWT)</span>
+            </li>
+            <li>
+              <span class="method post">POST</span>
+              <code>/api/auth/logout</code>
+              <span class="badge">Déconnexion</span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Utilisateurs</h2>
+          <p>Gestion des utilisateurs (protégé par JWT, certains endpoints admin).</p>
+          <ul class="endpoint-list">
+            <li>
+              <span class="method get">GET</span>
+              <code>/api/users</code>
+              <span class="badge">Lister tous les utilisateurs (admin)</span>
+            </li>
+            <li>
+              <span class="method get">GET</span>
+              <code>/api/users/:id</code>
+              <span class="badge">Détails d'un utilisateur</span>
+            </li>
+            <li>
+              <span class="method put">PUT</span>
+              <code>/api/users/:id</code>
+              <span class="badge">Mettre à jour un utilisateur</span>
+            </li>
+            <li>
+              <span class="method delete">DELETE</span>
+              <code>/api/users/:id</code>
+              <span class="badge">Supprimer (admin)</span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Recettes</h2>
+          <p>CRUD complet sur les recettes, avec filtres et pagination.</p>
+          <ul class="endpoint-list">
+            <li>
+              <span class="method get">GET</span>
+              <code>/api/recipes</code>
+              <span class="badge">Lister (filtres, tri, pagination)</span>
+            </li>
+            <li>
+              <span class="method post">POST</span>
+              <code>/api/recipes</code>
+              <span class="badge">Créer (auth requis)</span>
+            </li>
+            <li>
+              <span class="method get">GET</span>
+              <code>/api/recipes/:id</code>
+              <span class="badge">Détails d'une recette</span>
+            </li>
+            <li>
+              <span class="method put">PUT</span>
+              <code>/api/recipes/:id</code>
+              <span class="badge">Mettre à jour (owner/admin)</span>
+            </li>
+            <li>
+              <span class="method delete">DELETE</span>
+              <code>/api/recipes/:id</code>
+              <span class="badge">Supprimer (owner/admin)</span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Commentaires</h2>
+          <p>Endpoints pour gérer les commentaires associés aux recettes.</p>
+          <ul class="endpoint-list">
+            <li>
+              <span class="method post">POST</span>
+              <code>/api/comment/:recipeId/comments</code>
+              <span class="badge">Ajouter un commentaire</span>
+            </li>
+            <li>
+              <span class="method get">GET</span>
+              <code>/api/comment/recipes/:recipeId/comments</code>
+              <span class="badge">Lister les commentaires</span>
+            </li>
+            <li>
+              <span class="method put">PUT</span>
+              <code>/api/comment/recipes/:recipeId/comments/:id</code>
+              <span class="badge">Mettre à jour (owner/admin)</span>
+            </li>
+            <li>
+              <span class="method delete">DELETE</span>
+              <code>/api/comment/recipes/:recipeId/comments/:id</code>
+              <span class="badge">Supprimer (owner/admin)</span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="card tips">
+          <h2>Conseils d'utilisation</h2>
+          <ul>
+            <li>Utilisez <code>/api-docs</code> pour tester les endpoints directement dans Swagger.</li>
+            <li>Les routes protégées nécessitent un cookie <code>token</code> (JWT).</li>
+            <li>Les IDs sont des <code>ObjectId</code> MongoDB (24 caractères hexadécimaux).</li>
+          </ul>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>Recipe API &middot; Documentation d'exemple</span>
+        <span>Swagger UI : <a href="/api-docs" target="_blank">/api-docs</a></span>
+      </footer>
+    </div>
+  </body>
+  </html>
+

@@ -1,5 +1,6 @@
-const express = require('express');
-const cookieParser = require('cookie-parser');
+const path = require("path");
+const express = require("express");
+const cookieParser = require("cookie-parser");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./docs/swagger");
 const errorHandler = require("./middlewares/errorHandler");
@@ -17,6 +18,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Fichiers statiques (page d'accueil HTML + CSS)
+app.use(express.static(path.join(__dirname, "..", "public")));
+
+// Route racine : sert explicitement index.html (optionnel mais explicite)
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+});
+
 // Swagger Documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -31,7 +40,7 @@ app.get("/health", (req, res) => {
   res.status(200).json({
     success: true,
     message: "API en ligne",
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -39,7 +48,7 @@ app.get("/health", (req, res) => {
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    error: `Route ${req.method} ${req.originalUrl} non trouvée`
+    error: `Route ${req.method} ${req.originalUrl} non trouvée`,
   });
 });
 
