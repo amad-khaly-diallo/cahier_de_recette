@@ -30,7 +30,7 @@ const protect = require("../middlewares/authMiddleware");
  *                 example: Khaly
  *               email:
  *                 type: string
- *                 example: khaly@ example.com
+ *                 example: khaly@example.com
  *               password:
  *                 type: string
  *                 example: 123456
@@ -45,7 +45,7 @@ const protect = require("../middlewares/authMiddleware");
  *         description: Requête invalide
  */
 // POST → register new user
-router.post("/auth/register", userController.createUser);
+router.post("/register", userController.createUser);
 
 /**
  * @swagger
@@ -62,7 +62,7 @@ router.post("/auth/register", userController.createUser);
  *             properties:
  *               email:
  *                 type: string
- *                 example: khaly@ example.com
+ *                 example: khaly@example.com
  *               password:
  *                 type: string
  *                 example: 123456
@@ -81,7 +81,7 @@ router.post("/auth/register", userController.createUser);
  *         description: Email ou mot de passe incorrect
  */
 // POST → login user
-router.post("/auth/login", userController.loginUser);
+router.post("/login", userController.loginUser);
 
 /**
  * @swagger
@@ -93,7 +93,7 @@ router.post("/auth/login", userController.loginUser);
  *       - cookieAuth: []
  *     responses:
  *       200:
- *         description: Utilisateur déconnecté
+ *         description: Utilisateur déconnecté avec succès
  *         content:
  *           application/json:
  *             schema:
@@ -101,11 +101,11 @@ router.post("/auth/login", userController.loginUser);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: Déconnexion réussie
+ *                   example: "Déconnexion réussie"
  *       401:
  *         description: Utilisateur non authentifié
  */
 // POST → logout user (auth requis)
-router.post("/auth/logout", protect, userController.logoutUser);
+router.post("/logout", protect, userController.logoutUser);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const swaggerJSDoc = require("swagger-jsdoc");
+const path = require("path");
 
 const options = {
   definition: {
@@ -90,7 +91,7 @@ API REST pour gérer :
           required: ["name", "email", "password"],
           properties: {
             name: { type: "string", example: "Khaly" },
-            email: { type: "string", example: "khaly@ example.com" },
+            email: { type: "string", example: "khaly@example.com" },
             password: { type: "string", example: "123456" },
             isAdmin: { type: "boolean", example: false },
             createdAt: { type: "string", format: "date-time" }
@@ -98,15 +99,11 @@ API REST pour gérer :
         }
       }
     },
-
-    security: [
-      {
-        cookieAuth: []
-      }
-    ]
   },
 
-  apis: ["./routes/*.js"]
+  apis: [
+    path.join(__dirname, "../routes/*.js")
+  ]
 };
 
 const swaggerSpec = swaggerJSDoc(options);

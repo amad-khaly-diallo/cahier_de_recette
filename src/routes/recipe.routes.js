@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const protect = require("../middlewares/authMiddleware");
 const checkOwner = require("../middlewares/checkOwner");
+const validateObjectId = require("../middlewares/validateObjectId");
 const Recipe = require("../models/Recipe");
 const recipeController = require("../controllers/recipe.controller");
 
@@ -20,13 +21,15 @@ const recipeController = require("../controllers/recipe.controller");
  *     tags: [Recipes]
  *     responses:
  *       200:
- *         description: Liste des recettes
+ *         description: Liste des recettes récupérée avec succès
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Recipe'
+ *       500:
+ *         description: Erreur serveur
  */
 // GET toutes les recettes (user connecté)
 router.get("/", recipeController.getAllRecipes);
@@ -47,7 +50,15 @@ router.get("/", recipeController.getAllRecipes);
  *             $ref: '#/components/schemas/Recipe'
  *     responses:
  *       201:
- *         description: Recette créée
+ *         description: Recette créée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Recipe'
+ *       400:
+ *         description: Données invalides
+ *       401:
+ *         description: Non authentifié
  */
 // POST → créer recette
 router.post("/", protect, recipeController.createRecipe);
@@ -65,6 +76,7 @@ router.post("/", protect, recipeController.createRecipe);
  *         required: true
  *         schema:
  *           type: string
+ *         description: ID de la recette
  *     responses:
  *       200:
  *         description: Recette trouvée
@@ -72,9 +84,11 @@ router.post("/", protect, recipeController.createRecipe);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Recipe'
+ *       404:
+ *         description: Recette non trouvée
  */
 // GET une recette par ID
-router.get("/:id", recipeController.getRecipeById);
+router.get("/:id", validateObjectId("id"), recipeController.getRecipeById);
 
 /**
  * @swagger
@@ -90,6 +104,7 @@ router.get("/:id", recipeController.getRecipeById);
  *         required: true
  *         schema:
  *           type: string
+ *         description: ID de la recette
  *     requestBody:
  *       required: true
  *       content:
@@ -98,11 +113,22 @@ router.get("/:id", recipeController.getRecipeById);
  *             $ref: '#/components/schemas/Recipe'
  *     responses:
  *       200:
- *         description: Recette mise à jour
- *
+ *         description: Recette mise à jour avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Recipe'
+ *       400:
+ *         description: Données invalides
+ *       401:
+ *         description: Non authentifié
+ *       403:
+ *         description: Pas autorisé (propriétaire ou admin requis)
+ *       404:
+ *         description: Recette non trouvée
  */
 // PUT → update recette (propriétaire ou admin dans le controller)
-router.put("/:id", protect, checkOwner(Recipe, "id"), recipeController.updateRecipe);
+router.put("/:id", protect, validateObjectId("id"), checkOwner(Recipe, "id"), recipeController.updateRecipe);
 
 /**
  * @swagger
@@ -118,12 +144,18 @@ router.put("/:id", protect, checkOwner(Recipe, "id"), recipeController.updateRec
  *         required: true
  *         schema:
  *           type: string
+ *         description: ID de la recette
  *     responses:
  *       200:
- *         description: Recette supprimée
- *
+ *         description: Recette supprimée avec succès
+ *       401:
+ *         description: Non authentifié
+ *       403:
+ *         description: Pas autorisé (propriétaire ou admin requis)
+ *       404:
+ *         description: Recette non trouvée
  */
 // DELETE → delete recette (propriétaire ou admin dans le controller)
-router.delete("/:id", protect, checkOwner(Recipe, "id"), recipeController.deleteRecipe);
+router.delete("/:id", protect, validateObjectId("id"), checkOwner(Recipe, "id"), recipeController.deleteRecipe);
 
 module.exports = router;

@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user.controller");
-const  protect  = require("../middlewares/authMiddleware");
+const protect = require("../middlewares/authMiddleware");
 const admin = require("../middlewares/adminMiddleware");
+const validateObjectId = require("../middlewares/validateObjectId");
 
 /**
  * @swagger
@@ -21,13 +22,17 @@ const admin = require("../middlewares/adminMiddleware");
  *       - cookieAuth: []
  *     responses:
  *       200:
- *         description: Liste des utilisateurs
+ *         description: Liste des utilisateurs récupérée avec succès
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Non authentifié
+ *       403:
+ *         description: Accès refusé (admin requis)
  */
 // Lister tous les users (admin only)
 router.get("/", protect, admin, userController.getAllUsers);
@@ -46,12 +51,19 @@ router.get("/", protect, admin, userController.getAllUsers);
  *         required: true
  *         schema:
  *           type: string
+ *         description: ID de l'utilisateur
  *     responses:
  *       204:
- *         description: Utilisateur supprimé
+ *         description: Utilisateur supprimé avec succès
+ *       401:
+ *         description: Non authentifié
+ *       403:
+ *         description: Accès refusé (admin requis)
+ *       404:
+ *         description: Utilisateur non trouvé
  */
 // Supprimer un user (admin only) 
-router.delete("/:id", protect, admin, userController.deleteUser);
+router.delete("/:id", protect, admin, validateObjectId("id"), userController.deleteUser);
 
 /**
  * @swagger
@@ -67,16 +79,21 @@ router.delete("/:id", protect, admin, userController.deleteUser);
  *         required: true
  *         schema:
  *           type: string
+ *         description: ID de l'utilisateur
  *     responses:
  *       200:
- *         description: Détails de l'utilisateur
+ *         description: Détails de l'utilisateur récupérés avec succès
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
- **/
+ *       401:
+ *         description: Non authentifié
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
 // Obtenir un user par ID (auth requis)
-router.get("/:id", protect, userController.getUserById);
+router.get("/:id", protect, validateObjectId("id"), userController.getUserById);
 
 /**
  * @swagger
@@ -92,15 +109,40 @@ router.get("/:id", protect, userController.getUserById);
  *         required: true
  *         schema:
  *           type: string
+ *         description: ID de l'utilisateur
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Khaly"
+ *               email:
+ *                 type: string
+ *                 example: "khaly@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "nouveauMotDePasse"
  *     responses:
  *       200:
- *         description: Utilisateur mis à jour
+ *         description: Utilisateur mis à jour avec succès
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Données invalides
+ *       401:
+ *         description: Non authentifié
+ *       403:
+ *         description: Pas autorisé (propriétaire ou admin requis)
+ *       404:
+ *         description: Utilisateur non trouvé
  */
 // User or admin can update his info
-router.put("/:id", protect, userController.updateUser);
+router.put("/:id", protect, validateObjectId("id"), userController.updateUser);
 
 module.exports = router;
